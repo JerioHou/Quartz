@@ -1,7 +1,8 @@
 package com.demo.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created by Franky on 2018/08/10
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    @RequestMapping("/")
-    public String index(){
-        return "/templates/JobManager.html";
+    @GetMapping("/")
+    public ModelAndView index(){
+        return new ModelAndView("/JobManager.html");
     }
 }

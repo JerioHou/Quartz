@@ -7,10 +7,9 @@ import org.quartz.JobExecutionException;
 import java.util.Map;
 
 /**
- * Created by Franky on 2018/08/10
+ * Created by Jerio on 2018/8/11
  */
-public class MyJob implements BaseJob {
-
+public class SimpleJob implements BaseJob {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
