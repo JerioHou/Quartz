@@ -2,7 +2,6 @@ package com.demo.config;
 
 import org.quartz.Scheduler;
 import org.quartz.ee.servlet.QuartzInitializerListener;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +49,4 @@ public class SchedulerConfig {
     public QuartzInitializerListener executorListener() {
         return new QuartzInitializerListener();
     }
-
-
 }

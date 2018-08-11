@@ -16,6 +16,8 @@ public class MyJob implements BaseJob {
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
         for (Map.Entry entry : jobDataMap.entrySet()){
             System.out.println(entry.getKey()+" : "+entry.getValue());
+
+            //dosomething
         }
     }
 }

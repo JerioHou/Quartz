@@ -2,16 +2,13 @@ package com.demo.controller;
 
 import com.demo.domain.JobAndTrigger;
 import com.demo.job.BaseJob;
-import com.demo.job.MyJob;
 import com.demo.service.JobService;
 import com.github.pagehelper.PageInfo;
 import org.quartz.*;
-import org.quartz.spi.MutableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,15 +27,24 @@ public class JobController {
     private Scheduler scheduler;
 
     @PostMapping(value="/addjob")
-    public void addjob(@RequestParam(value="jobClassName")String jobClassName,
+    public void addjob(@RequestParam(value="jobClassName")String jobName,
+                       @RequestParam(value="jobClassName")String jobClassName,
                        @RequestParam(value="jobGroupName")String jobGroupName,
+                       @RequestParam(value="jobClassName")String triggerName,
+                       @RequestParam(value="jobGroupName")String triggerGroupName,
                        @RequestParam(value="cronExpression")String cronExpression) throws Exception
     {
-        addJobByCronTrigger(jobClassName, jobGroupName, cronExpression);
-//        addJobBySimpleTrigger(jobClassName, jobGroupName);
+        addJobByCronTrigger(jobName,jobClassName, jobGroupName,triggerName,triggerGroupName, cronExpression);
+//        addJobBySimpleTrigger(jobName,jobClassName, jobGroupName,triggerName,triggerGroupName);
     }
 
-    private void addJobBySimpleTrigger(String jobClassName, String jobGroupName) {
+    /**
+     * 简单定时任务
+     * @param jobClassName
+     * @param jobGroupName
+     */
+    private void addJobBySimpleTrigger(String jobName,String jobClassName, String jobGroupName,
+                                        String triggerName,String triggerGroupName) {
         try {
             //构建jobDataMap
             JobDataMap jobDataMap = new JobDataMap();
@@ -46,7 +52,7 @@ public class JobController {
 
             //构建JobDetail
             JobDetail jobDetail = JobBuilder.newJob(getClass(jobClassName))
-                    .setJobData(jobDataMap).withIdentity(jobClassName,jobGroupName).build();
+                    .setJobData(jobDataMap).withIdentity(jobName,jobGroupName).build();
 
             //构建schedulerBuilder
             SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
@@ -54,7 +60,7 @@ public class JobController {
 
             //构建trigger
             SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger()
-                    .withIdentity("simple","simple_group")
+                    .withIdentity(triggerName,triggerGroupName)
 //                    .endAt(new Date(System.currentTimeMillis()+60000))
                     .withSchedule(simpleScheduleBuilder).build();
             scheduler.scheduleJob(jobDetail,simpleTrigger);
@@ -64,7 +70,14 @@ public class JobController {
         }
     }
 
-    private void addJobByCronTrigger(String jobClassName, String jobGroupName, String cronExpression) {
+    /**
+     * Cron表达式的定时任务
+     * @param jobClassName
+     * @param jobGroupName
+     * @param cronExpression
+     */
+    private void addJobByCronTrigger(String jobName,String jobClassName, String jobGroupName,
+                                     String triggerName,String triggerGroupName, String cronExpression) {
 
         try {
             //构建jobDataMap
@@ -73,13 +86,13 @@ public class JobController {
 
             //构建job信息
             JobDetail jobdetail = JobBuilder.newJob(getClass(jobClassName)).setJobData(jobDataMap)
-                    .withIdentity(jobClassName,jobGroupName).build();
+                    .withIdentity(jobName,jobGroupName).build();
 
             //表达式调度构建器(即任务执行的时间)
             CronScheduleBuilder schedulerBuilder =CronScheduleBuilder.cronSchedule(cronExpression);
 
             //构建trigger
-            CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(jobClassName,jobGroupName)
+            CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerName,triggerGroupName)
                     .withSchedule(schedulerBuilder).build();
             //执行任务
             scheduler.scheduleJob(jobdetail,cronTrigger);
